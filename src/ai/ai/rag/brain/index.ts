@@ -2,7 +2,7 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { ContextualCompressionRetriever } from "langchain/retrievers/contextual_compression";
 import { EmbeddingsFilter } from "langchain/retrievers/document_compressors/embeddings_filter";
 import { DocumentCompressorPipeline } from "langchain/retrievers/document_compressors";
-import { FastEmbedding } from "@builderbot-plugins/fast-embedding";
+import { FastEmbedding } from "../../embeddings";
 import StoreManager from "../store";
 import { ContextOpts } from "../../../types";
 

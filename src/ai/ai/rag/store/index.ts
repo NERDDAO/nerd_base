@@ -1,4 +1,4 @@
-import { FastEmbedding } from "@builderbot-plugins/fast-embedding";
+import { FastEmbedding } from "../../embeddings/";
 import { LanceDB } from "@langchain/community/vectorstores/lancedb";
 import { Table, connect } from "vectordb";
 import { loadFile } from "../loaders";

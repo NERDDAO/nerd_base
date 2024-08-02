@@ -2,8 +2,6 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ES2022",
-    "declaration": false,
-    "declarationMap": false,
     "moduleResolution": "node",
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -12,17 +10,19 @@
     "sourceMap": false,
     "outDir": "./dist",
     "baseUrl": "./",
-    "rootDir": "./",
+    "rootDir": "./src",
     "incremental": true,
     "skipLibCheck": true,
     "paths": {
-      "~/*": ["./src/*"]
-    }
+      "~/*": ["./src/*"],
+
+    },
+  "allowJs": true,
+  "esModuleInterop": true,
+  "importHelpers": true,
+  "types": ["node"],
   },
-  "include": [
-    "**/*.js",
-    "**/*.ts"
-  ],
+  "include": ["src/**/*.js", "src/**/*.ts"],
   "exclude": [
     "node_modules",
     "dist",

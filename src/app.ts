@@ -3,6 +3,31 @@ import { createBot, createProvider, createFlow, addKeyword, utils } from '@build
 import { JsonFileDB as Database } from '@builderbot/database-json'
 import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
 import { TelegramProvider } from '@builderbot-plugins/telegram'
+import "dotenv/config"
+import { EVENTS, MemoryDB } from "@builderbot/bot"
+import { createFlowRouting, structuredOutput, createAIFlow } from "./ai/index"
+import z from "zod"
+
+
+const welcome = createAIFlow
+    .setKeyword(EVENTS.WELCOME)
+    .setAIModel({ modelName: 'openai' })
+    .setZodSchema(
+        z.object({
+            name: z.string().nullable().describe('El nombre de la persona por la cual pregunta el usuario'),
+            age: z.number().nullable().describe('La edad de la persona por la cual pregunta el usuario')
+        })
+    )
+    .create({
+        afterEnd(flow) {
+            return flow.addAction((_, { state }) => {
+                console.log(state.get('aiAnswer'))
+                state.clear()
+            })
+        }
+    })
+
+
 
 const PORT = process.env.PORT ?? 3008
 
@@ -60,13 +85,16 @@ const fullSamplesFlow = addKeyword<Provider, Database>(['samples', utils.setEven
     })
 
 const main = async () => {
-    const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
+
+
+    const adapterFlow = createFlow([registerFlow, fullSamplesFlow, welcome])
     
     const adapterProvider = createProvider(TelegramProvider, {
         token: '7196484074:AAG65I-qHEq9U5w2ISjqvtd4-PoOj1_pMeI'
     })
     
     const adapterDB = new Database({ filename: 'db.json' })
+
 
     const { handleCtx, httpServer } = await createBot({
         flow: adapterFlow,
