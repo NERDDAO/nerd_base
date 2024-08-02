@@ -1,151 +1,57 @@
+import "dotenv/config"
+import {
+  createBot,
+  createProvider,
+  createFlow,
+    EVENTS,
+} from "@builderbot/bot";
 import { join } from 'path'
-import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
 import { JsonFileDB as Database } from '@builderbot/database-json'
 import { TelegramProvider as Provider } from '@builderbot-plugins/telegram'
-import dotenv from "dotenv"
-import { EVENTS, MemoryDB } from "@builderbot/bot"
-import { createFlowRouting, structuredOutput, createAIFlow } from "./ai/index"
-import z from "zod"
-
-dotenv.config()
-
-
-const welcome = createAIFlow
-    .setKeyword(EVENTS.WELCOME)
-    .setAIModel({ modelName: 'openai' })
-    .setZodSchema(
-        z.object({
-            name: z.string().nullable().describe('El nombre de la persona por la cual pregunta el usuario'),
-            age: z.number().nullable().describe('La edad de la persona por la cual pregunta el usuario'),
-            thot: z.string().nullable().describe('tu actual pensamiento')
-        })
-    )
-    .create({
-        afterEnd(flow) {
-            return flow.addAction((_, { state }) => {
-                flow.addAnswer("N E R D S")
-                flow.addAnswer(state.get('aiAnswer').thot)
-                state.clear()
-            })
-        }
-    })
-
-
+//import z from "zod"
 
 const PORT = process.env.PORT ?? 3008
+import {init} from './ai/agents';
+import BaseAgent from "./ai/agents/base-agent";
 
-const discordFlow = addKeyword<Provider, Database>('doc').addAnswer(
-    ['You can see the documentation here', '📄 https://builderbot.app/docs \n', 'Do you want to continue? *yes*'].join(
-        '\n'
-    ),
-    { capture: true },
-    async (ctx, { gotoFlow, flowDynamic }) => {
-        if (ctx.body.toLocaleLowerCase().includes('yes')) {
-            return gotoFlow(registerFlow)
-        }
-        await flowDynamic('Thanks!')
-        return
-    }
-)
+/**
+ * Configuracion de Plugin
+ */
 
-const welcomeFlow = addKeyword<Provider, Database>(['hi', 'hello', 'hola'])
-    .addAnswer(`🙌 Hello welcome to this *Chatbot*`)
-    .addAnswer(
-        [
-            'I share with you the following links of interest about the project',
-            '👉 *doc* to view the documentation',
-        ].join('\n'),
-        { delay: 800, capture: true },
-        async (ctx, { fallBack }) => {
-            if (!ctx.body.toLocaleLowerCase().includes('doc')) {
-                return fallBack('You should type *doc*')
-            }
-            return
-        },
-        [discordFlow]
-    )
+const employeesAddon = init();
 
-const registerFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_FLOW'))
-    .addAnswer(`What is your name?`, { capture: true }, async (ctx, { state }) => {
-        await state.update({ name: ctx.body })
-    })
-    .addAnswer('What is your age?', { capture: true }, async (ctx, { state }) => {
-        await state.update({ age: ctx.body })
-    })
-    .addAction(async (_, { flowDynamic, state }) => {
-        await flowDynamic(`${state.get('name')}, thanks for your information!: Your age: ${state.get('age')}`)
-    })
+employeesAddon.employees([
+  {
+    name: "EMPLEADO_VENDEDOR",
+    description:
+      "Soy Rob el vendedor amable encargado de atentender si tienes intencion de comprar o interesado en algun producto, mis respuestas son breves.",
+    flow: BaseAgent
+        .setKeyword(EVENTS.WELCOME).create().addAnswer("YOU DID IT!"),
+  }
+])
 
-const fullSamplesFlow = addKeyword<Provider, Database>(['samples', utils.setEvent('SAMPLES')])
-    .addAnswer(`💪 I'll send you a lot files...`)
-    .addAnswer(`Send image from Local`, { media: join(process.cwd(), 'assets', 'sample.png') })
-    .addAnswer(`Send video from URL`, {
-        media: 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTJ0ZGdjd2syeXAwMjQ4aWdkcW04OWlqcXI3Ynh1ODkwZ25zZWZ1dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/LCohAb657pSdHv0Q5h/giphy.mp4',
-    })
-    .addAnswer(`Send audio from URL`, { media: 'https://cdn.freesound.org/previews/728/728142_11861866-lq.mp3' })
-    .addAnswer(`Send file from URL`, {
-        media: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    })
+/**
+ * 
+ */
+
 
 const main = async () => {
-
+ const adapterDB = new Database({ filename: 'db.json' })
     const adapterProvider = createProvider(Provider, {
         token: process.env.TELEGRAM_BOT_TOKEN
     })
+  const adapterFlow = createFlow([
+        BaseAgent
+            .setKeyword(EVENTS.WELCOME).create().addAnswer("YOU DID IT! TWICE!"),
+  ]);
 
-    const adapterFlow = createFlow([welcome])
-    
+const { handleCtx, httpServer } = await createBot({
+    flow: adapterFlow,
+    provider: adapterProvider,
+    database: adapterDB,
+})
 
-    
-    const adapterDB = new Database({ filename: 'db.json' })
+ httpServer(+PORT)
+};
 
-
-    const { handleCtx, httpServer } = await createBot({
-        flow: adapterFlow,
-        provider: adapterProvider,
-        database: adapterDB,
-    })
-
-    adapterProvider.server.post(
-        '/v1/messages',
-        handleCtx(async (bot, req, res) => {
-            const { number, message, urlMedia } = req.body
-            await bot.sendMessage(number, message, { media: urlMedia ?? null })
-            return res.end('sended')
-        })
-    )
-
-    adapterProvider.server.post(
-        '/v1/register',
-        handleCtx(async (bot, req, res) => {
-            const { number, name } = req.body
-            await bot.dispatch('REGISTER_FLOW', { from: number, name })
-            return res.end('trigger')
-        })
-    )
-
-    adapterProvider.server.post(
-        '/v1/samples',
-        handleCtx(async (bot, req, res) => {
-            const { number, name } = req.body
-            await bot.dispatch('SAMPLES', { from: number, name })
-            return res.end('trigger')
-        })
-    )
-
-    adapterProvider.server.post(
-        '/v1/blacklist',
-        handleCtx(async (bot, req, res) => {
-            const { number, intent } = req.body
-            if (intent === 'remove') bot.blacklist.remove(number)
-            if (intent === 'add') bot.blacklist.add(number)
-
-            res.writeHead(200, { 'Content-Type': 'application/json' })
-            return res.end(JSON.stringify({ status: 'ok', number, intent }))
-        })
-    )
-
-    httpServer(+PORT)
-}
-
-main()
+main();

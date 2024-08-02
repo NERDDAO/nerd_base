@@ -1,10 +1,10 @@
 import { EVENTS, addKeyword } from "@builderbot/bot";
 import { Callbacks, ModelArgs, ModelName } from "../types";
-import { FactoryModel, Memory } from "../ai";
+import { FactoryModel, Memory } from "../brain";
 import { TFlow } from "@builderbot/bot/dist/types";
-import Runnable from "../ai/rag";
+import Runnable from "../brain/rag";
 import z, { ZodSchema, ZodType, ZodTypeDef } from "zod"
-import Brain from "../ai/rag/brain";
+import Brain from "../brain/rag/brain";
 
 export default class StructuredOutput {
     private static kwrd: TFlow<any, any> = addKeyword(EVENTS.ACTION)
@@ -39,7 +39,7 @@ export default class StructuredOutput {
             try {
                 const runnable = new Runnable(this.model.model, await context)
 
-                const schema = this.schema || z.object({ 
+                const schema = this.schema || z.object({
                     answer: z.string().describe('Answer as best as possible')
                 })
 

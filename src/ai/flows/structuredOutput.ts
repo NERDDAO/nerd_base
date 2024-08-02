@@ -1,6 +1,6 @@
 import { EVENTS, addKeyword } from "@builderbot/bot";
 import { Callbacks, ModelArgs, ModelName } from "../types";
-import { FactoryModel, Memory } from "../ai";
+import { FactoryModel, Memory } from "../brain";
 import { ZodSchema, ZodType, ZodTypeDef } from "zod";
 import { StructuredOutputParser } from "langchain/output_parsers";
 import { TFlow } from "@builderbot/bot/dist/types";

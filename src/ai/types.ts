@@ -4,8 +4,8 @@ import { TFlow } from "@builderbot/bot/dist/types"
 export type Eventskrd = keyof typeof EVENTS
 
 export type Callbacks = {
-    beforeStart?: <P, B>(flow: TFlow<P,B>) => TFlow<P,B>,
-    afterEnd?: <P, B>(flow: TFlow<P,B>) => TFlow<P,B>,
+    beforeStart?: <P, B>(flow: TFlow<P, B>) => TFlow<P, B>,
+    afterEnd?: <P, B>(flow: TFlow<P, B>) => TFlow<P, B>,
     onFailure?: (error: Error) => void
 }
 
@@ -14,11 +14,18 @@ export type ModelArgs = {
     maxOutputTokens?: number,
     apikey?: string,
     temperature?: number,
-    topK?: number 
+    topK?: number
     topP?: number
+    configuration?: { baseURL: string }
 }
 
-export type ModelName ='gemini' | 'openai'
+export type Employee = {
+  name: string;
+  description: string;
+  flow?: TFlow<any, any>
+}
+
+export type ModelName = 'openai'
 
 export type InvokeParams = {
     question: string,
