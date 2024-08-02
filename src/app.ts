@@ -2,10 +2,12 @@ import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
 import { JsonFileDB as Database } from '@builderbot/database-json'
 import { TelegramProvider as Provider } from '@builderbot-plugins/telegram'
-import "dotenv/config"
+import dotenv from "dotenv"
 import { EVENTS, MemoryDB } from "@builderbot/bot"
 import { createFlowRouting, structuredOutput, createAIFlow } from "./ai/index"
 import z from "zod"
+
+dotenv.config()
 
 
 const welcome = createAIFlow
@@ -22,7 +24,7 @@ const welcome = createAIFlow
         afterEnd(flow) {
             return flow.addAction((_, { state }) => {
                 flow.addAnswer("N E R D S")
-                flow.addAnswer(state.get('aiAnswer'))
+                flow.addAnswer(state.get('aiAnswer').thot)
                 state.clear()
             })
         }
@@ -87,12 +89,13 @@ const fullSamplesFlow = addKeyword<Provider, Database>(['samples', utils.setEven
 
 const main = async () => {
 
+    const adapterProvider = createProvider(Provider, {
+        token: process.env.TELEGRAM_BOT_TOKEN
+    })
 
     const adapterFlow = createFlow([welcome])
     
-    const adapterProvider = createProvider(Provider, {
-        token: '7196484074:AAG65I-qHEq9U5w2ISjqvtd4-PoOj1_pMeI'
-    })
+
     
     const adapterDB = new Database({ filename: 'db.json' })
 
