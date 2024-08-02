@@ -1,6 +1,6 @@
 import { cleanText } from "./determine";
 import { PROMPTS } from "./prompt";
-import { Employee } from "./types"
+import { Employee } from "../types"
 /**
  *
  * @param {*} employees

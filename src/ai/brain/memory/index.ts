@@ -8,33 +8,13 @@ class MemoryHistory {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     memory = async (inside: RoleHistory, _state: any, model: ModelName) => {
         let memory = _state.get('memory') ?? []
-        if (model === 'gemini') {
-            memory.push(
-                new HumanMessage({
-                    content: [
-                        {
-                            type: 'text',
-                            text: inside.user
-                        }
-                    ]
-                }),
-                new AIMessage({
-                    content: [
-                        {
-                            type: 'text',
-                            text: inside.assistant
-                        }
-                    ]
-                })
-            )
-
-        } else {
+   
             memory.push([
                 new HumanMessage({ content: inside.user, name: 'user' }),
                 new SystemMessage({ content: inside.assistant, name: 'assistant' })
             ])
             
-        }
+       
         await _state.update({ memory })
     }
 

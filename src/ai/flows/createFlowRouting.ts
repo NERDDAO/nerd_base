@@ -1,6 +1,6 @@
 import { EVENTS, addKeyword } from "@builderbot/bot";
 import { Callbacks, ModelArgs, ModelName } from "../types";
-import { FactoryModel, Memory, catchIntention, formatInstructionRouting } from "../ai";
+import { FactoryModel, Memory, catchIntention, formatInstructionRouting } from "../brain";
 import { TFlow } from "@builderbot/bot/dist/types";
 
 export default class FlowRouting {

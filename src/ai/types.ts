@@ -25,7 +25,7 @@ export type Employee = {
   flow?: TFlow<any, any>
 }
 
-export type ModelName = 'openai'
+export type ModelName = 'openai' | 'gemini'
 
 export type InvokeParams = {
     question: string,
