@@ -10,5 +10,4 @@ data.db
 *qr.png
 db.json
 cache_embedding
-data.db
-
+./src/data/

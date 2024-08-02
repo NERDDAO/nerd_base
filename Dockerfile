@@ -20,8 +20,9 @@ RUN pnpm run build
 FROM builder as deploy
 
 # Copy only necessary files and directories for deployment
-COPY --from=builder /app/src ./src
+COPY --from=builder /app/src ./src 
 COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
+COPY --from=builder /app/data ./data 
 
 RUN pnpm install
 CMD ["pnpm", "start"]

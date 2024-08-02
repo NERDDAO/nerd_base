@@ -51,9 +51,12 @@ export default class StructuredOutput {
                 Memory.memory({ user: ctx.body, assistant: JSON.stringify(aiAnswer) }, state, this.model.instance)
 
                 await state.update({ aiAnswer })
+
+                console.log(aiAnswer, "===========YAY=========")
             } catch (error) {
                 callbacks?.onFailure && callbacks?.onFailure(error)
                 await state.update({ aiAnswer: null })
+                console.log(error, "===========OOPSIE=========")
             }
 
         })

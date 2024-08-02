@@ -64,9 +64,9 @@ export default class FactoryModel {
 
         this.model = new ChatOpenAI({
             modelName: args?.modelName || 'meta-llama/Meta-Llama-3.1-8B-Instruct',
-            maxTokens: args?.maxOutputTokens || 12048,
+            maxTokens: args?.maxOutputTokens || 2048,
             openAIApiKey: args?.apikey || "somekey",
-            configuration: { baseURL: "http://8000:vllm/v1" }
+            configuration: { baseURL: "http://vllm:8000/v1" }
         })
 
     }

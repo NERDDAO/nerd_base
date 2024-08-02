@@ -1,8 +1,7 @@
 import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
 import { JsonFileDB as Database } from '@builderbot/database-json'
-import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
-import { TelegramProvider } from '@builderbot-plugins/telegram'
+import { TelegramProvider as Provider } from '@builderbot-plugins/telegram'
 import "dotenv/config"
 import { EVENTS, MemoryDB } from "@builderbot/bot"
 import { createFlowRouting, structuredOutput, createAIFlow } from "./ai/index"
@@ -15,13 +14,15 @@ const welcome = createAIFlow
     .setZodSchema(
         z.object({
             name: z.string().nullable().describe('El nombre de la persona por la cual pregunta el usuario'),
-            age: z.number().nullable().describe('La edad de la persona por la cual pregunta el usuario')
+            age: z.number().nullable().describe('La edad de la persona por la cual pregunta el usuario'),
+            thot: z.string().nullable().describe('tu actual pensamiento')
         })
     )
     .create({
         afterEnd(flow) {
             return flow.addAction((_, { state }) => {
-                console.log(state.get('aiAnswer'))
+                flow.addAnswer("N E R D S")
+                flow.addAnswer(state.get('aiAnswer'))
                 state.clear()
             })
         }
@@ -87,9 +88,9 @@ const fullSamplesFlow = addKeyword<Provider, Database>(['samples', utils.setEven
 const main = async () => {
 
 
-    const adapterFlow = createFlow([registerFlow, fullSamplesFlow, welcome])
+    const adapterFlow = createFlow([welcome])
     
-    const adapterProvider = createProvider(TelegramProvider, {
+    const adapterProvider = createProvider(Provider, {
         token: '7196484074:AAG65I-qHEq9U5w2ISjqvtd4-PoOj1_pMeI'
     })
     
