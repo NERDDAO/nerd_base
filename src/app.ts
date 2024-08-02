@@ -26,7 +26,9 @@ employeesAddon.employees([
     description:
       "Soy Rob el vendedor amable encargado de atentender si tienes intencion de comprar o interesado en algun producto, mis respuestas son breves.",
     flow: BaseAgent
-        .setKeyword(EVENTS.WELCOME).create().addAnswer("YOU DID IT!"),
+        .setKeyword(EVENTS.WELCOME)
+        .setAIModel({ modelName: 'openai' })//on openai
+        .create().addAnswer("YOU DID IT!")
   }
 ])
 
