@@ -54,9 +54,9 @@ class EmployeesClass {
           })
         ).create()
 
-      if (llmDetermineEmployee?.error) {
-        throw new Error(llmDetermineEmployee?.error?.message)
-      }
+      /* if (llmDetermineEmployee?.error) {
+         throw new Error(llmDetermineEmployee?.error?.message)
+       }*/
 
       const bestChoise = determineAgent(
         librarian.ctx.answer.toString()

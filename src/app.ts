@@ -1,53 +1,28 @@
-import { createBot, MemoryDB, EVENTS, createProvider, addKeyword, createFlow } from '@builderbot/bot'
-import { EmployeesClass } from './ai/agents/'
+import 'dotenv/config'
+import { createBot, MemoryDB, createProvider } from '@builderbot/bot'
+import { createShopifyFlow } from './ai/agents/utils'
 import { TelegramProvider } from '@builderbot-plugins/telegram'
-import "dotenv/config"
 
+const configurations = {
+	modelName: 'gpt-3.5-turbo-16k',
+	temperature: 0,
+	openApiKey: 'YOUR_OPENAI_APIKEY',
+	shopifyApiKey: 'YOUR_SHOPIFY_APIKEY',
+	shopifyDomain: 'YOUR_SHOPIFY_DOMAIN',
 
+}
 
-const expertFlow = addKeyword(EVENTS.ACTION)
-	.addAction(async (_, { state, flowDynamic }) => {
-		const currentState = state.getMyState()
-		return flowDynamic(currentState.answer) /** here come the answer by OpenAi pluggin */
-	})
+const shopify_flow = await createShopifyFlow(configurations)
 
-const welcomeFlow = addKeyword(['hi'])
-	.addAnswer('Ey! welcome')
-	.addAnswer('Your name is?', { capture: true }, async (ctx, { flowDynamic }) => {
-		await flowDynamic([`nice! ${ctx.body}`, 'I will send you a funny image'])
-	})
-	.addAction(async (_, { flowDynamic }) => {
-		const dataApi = await fetch(`https://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true`)
-		const [imageUrl] = await dataApi.json()
-		await flowDynamic([{ body: '😜', media: imageUrl }])
-	})
-const ledger = new EmployeesClass()
-
-ledger.employees([
-	{
-		name: "EXPERT_AGENT",
-		description:
-			"Hello, my name is Leifer. I am the specialized person in charge of resolving your doubts about our chatbot course, which is developed with Node.js and JavaScript. This course is designed to facilitate sales automation in your business. I will provide concise and direct answers to maximize your understanding.",
-		flow: expertFlow,
-	}
-])
 
 const main = async () => {
-	const adapterDB = new MemoryDB()
-	const adapterFlow = createFlow([welcomeFlow])
-	const adapterProvider = createProvider(TelegramProvider, {
-		token: process.env.TELEGRAM_BOT_TOKEN
+	const provider = createProvider(TelegramProvider, {})
+
+	await createBot({
+		database: new MemoryDB(),
+		provider,
+		flow: shopify_flow,
 	})
-
-
-
-	const bot = await createBot({
-		flow: adapterFlow,
-		provider: adapterProvider,
-		database: adapterDB,
-	})
-	bot.httpServer(3008)
 }
 
 main()
-
