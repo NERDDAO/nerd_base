@@ -2,7 +2,7 @@
 version: "2.0"
 services:
   service-1:
-    build: plat0x/langbot:latest
+    build: .
     ports:
     - 3080:3080
     environment:

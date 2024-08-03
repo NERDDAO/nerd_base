@@ -30,7 +30,7 @@ class EmployeesClass {
   };
 
   /**/
-  /*
+  /**/
   determine = async (text: string) => {
     try {
 
@@ -69,7 +69,7 @@ class EmployeesClass {
       console.log({ err })
       return undefined
     }
-  };*/
+  };
   /**
    * @param {*} employee 
    * @param {*} ctxFn 
