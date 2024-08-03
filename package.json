@@ -12,7 +12,6 @@
   },
   "keywords": [],
   "dependencies": {
-    "@anush008/tokenizers": "^0.0.0",
     "@builderbot-plugins/telegram": "^2.0.0",
     "@builderbot/bot": "1.1.7",
     "@builderbot/database-json": "1.1.7",

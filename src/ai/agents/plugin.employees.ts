@@ -5,10 +5,11 @@ import BaseAgent from "./base-agent";
 import { Employee, ModelArgs as Setting } from "../types";
 import { EVENTS, MemoryDB } from "@builderbot/bot"
 import z from "zod"
+import { BaseRetriever } from "@langchain/core/retrievers"
+import { BaseChatModel } from "@langchain/core/language_models/chat_models"
 
 class EmployeesClass {
   listEmployees: Employee[] = [];
-
   /**
    *
    * @param {*} employees [] array
@@ -28,9 +29,8 @@ class EmployeesClass {
 
   };
 
-  /**
-   *
-   */
+  /**/
+  /*
   determine = async (text: string) => {
     try {
 
@@ -45,7 +45,6 @@ class EmployeesClass {
         },
       ]
       const librarian = BaseAgent
-        .setKeyword(EVENTS.WELCOME) //always replies
         .setAIModel({ modelName: 'openai' })//on openai
         .setZodSchema(// with this schema
           z.object({// defines call
@@ -53,21 +52,11 @@ class EmployeesClass {
             age: z.number().nullable().describe('La edad de la persona por la cual pregunta el usuario'),
             thot: z.string().nullable().describe('tu actual pensamiento')
           })
-        )
-        .create({//runs flow
-          afterEnd(flow) {//callback
-            return flow.addAction((_, { state }) => {
-              flow.addAnswer("N E R D S")// should reply
-              flow.addAnswer(state.get('aiAnswer').thot)//2 mesagges
-              state.clear()// clears state
-            })
-          }
-        })
+        ).create()
 
-
-      /*if (llmDetermineEmployee?.error) {
+      if (llmDetermineEmployee?.error) {
         throw new Error(llmDetermineEmployee?.error?.message)
-      }*/
+      }
 
       const bestChoise = determineAgent(
         librarian.ctx.answer.toString()
@@ -80,8 +69,7 @@ class EmployeesClass {
       console.log({ err })
       return undefined
     }
-  };
-
+  };*/
   /**
    * @param {*} employee 
    * @param {*} ctxFn 

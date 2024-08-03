@@ -28,14 +28,14 @@ export default class StructuredOutput {
 
     static create = (callbacks?: Callbacks) => {
         const context = Brain.init()
-        
+
         if (!this.model) {
             this.model = new FactoryModel()
         }
 
         this.kwrd = callbacks?.beforeStart && callbacks?.beforeStart(this.kwrd) || this.kwrd
 
-        this.kwrd = this.kwrd.addAction(async (ctx, { state }) => {
+        this.kwrd = this.kwrd.addAction(async (ctx, { state, flowDynamic }) => {
             try {
                 const runnable = new Runnable(this.model.model, await context)
 
@@ -43,16 +43,17 @@ export default class StructuredOutput {
                     answer: z.string().describe('Answer as best as possible')
                 })
 
-                const aiAnswer = await  runnable.retriever({
-                        question: ctx.body,
-                        history: await Memory.getMemory(state, 4)
-                    }, schema)
+                const aiAnswer = await runnable.retriever({
+                    question: ctx.body,
+                    history: await Memory.getMemory(state, 4)
+                }, schema)
 
                 Memory.memory({ user: ctx.body, assistant: JSON.stringify(aiAnswer) }, state, this.model.instance)
 
                 await state.update({ aiAnswer })
 
                 console.log(aiAnswer, "===========YAY=========")
+                return flowDynamic(aiAnswer)
             } catch (error) {
                 callbacks?.onFailure && callbacks?.onFailure(error)
                 await state.update({ aiAnswer: null })

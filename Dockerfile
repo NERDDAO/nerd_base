@@ -10,7 +10,6 @@ WORKDIR /app
 
 # Copy package.json and pnpm-lock.yaml files to the working directory
 COPY package*.json pnpm-lock.yaml ./
-
 # Install dependencies using PNPM
 RUN pnpm install
 COPY . .
@@ -24,5 +23,5 @@ COPY --from=builder /app/src ./src
 COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
 COPY --from=builder /app/data ./data 
 
-RUN pnpm install
+RUN npm cache clean --force && pnpm install
 CMD ["pnpm", "start"]

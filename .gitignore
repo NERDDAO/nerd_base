@@ -9,5 +9,5 @@ data.db
 *.log
 *qr.png
 db.json
-cache_embedding
+cache_embedding/*
 ./src/data/
