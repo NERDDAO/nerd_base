@@ -7,7 +7,7 @@ type RoleHistory = { user: string, assistant: string }
 class MemoryHistory {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     memory = async (inside: RoleHistory, _state: any, model: ModelName) => {
-        let memory = _state.get('memory') ?? []
+        const memory = _state.get('memory') ?? []
    
             memory.push([
                 new HumanMessage({ content: inside.user, name: 'user' }),

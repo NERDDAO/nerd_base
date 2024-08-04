@@ -53,7 +53,7 @@ export default class StructuredOutput {
                 await state.update({ aiAnswer })
 
                 console.log(aiAnswer, "===========YAY=========")
-                return flowDynamic(aiAnswer)
+                return await flowDynamic(aiAnswer)
             } catch (error) {
                 callbacks?.onFailure && callbacks?.onFailure(error)
                 await state.update({ aiAnswer: null })
